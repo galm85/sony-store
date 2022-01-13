@@ -32,7 +32,7 @@ app.use('/orders',ordersRoute);
 app.use('/messages',messagesRoute);
 
 app.get('/',(req,res)=>{
-    res.send("Sony");
+    res.send("Sony v2");
 })
 
 
