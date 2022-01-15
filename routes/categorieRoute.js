@@ -32,7 +32,7 @@ router.get('/',async(req,res)=>{
 //add new categorie
 router.post('/',upload.single('image'),async(req,res)=>{
     let category = new Categorie(req.body);
-    console.log(req.file);
+
     if(req.file){
         category.image = req.file.path;
     }else{
@@ -79,6 +79,23 @@ router.delete('/:categoryId',async(req,res)=>{
         res.status(200).send(category.title + 'category Deleted');
     }catch(err){
         res.status(400).send('category did not delete....')
+    }
+})
+
+
+//update category
+router.patch('/update/:categoryId',upload.single('image'),async(req,res)=>{
+    try{
+        if(req.file){
+            let newCategory = await Categorie.findById(req.params.categoryId);
+            newCategory.image = req.file.path;
+            await Categorie.findByIdAndUpdate(req.params.categoryId,newCategory);
+        }else{
+            await Categorie.findByIdAndUpdate(req.params.categoryId,req.body);
+        }
+        return res.status(200).send('Category Updated');
+    }catch(err){
+        res.status(400).send(err)
     }
 })
 
