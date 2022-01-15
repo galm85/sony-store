@@ -30,16 +30,21 @@ router.get('/',async(req,res)=>{
 
 
 //add new Product
-router.post('/',upload.single('image'),async(req,res)=>{
-    let product = new Product(req.body);
-    if(req.file){
-        product.image = req.file.path;
-    }else{
-        product.image = './uploads/images/noImage/png';
-    }
 
-    await product.save();
-    res.send('product saved');
+router.post('/',upload.single('image'),async(req,res)=>{
+    try{
+        let product = new Product(req.body);
+        if(req.file){
+            product.image = req.file.path;
+        }else{
+            product.image = './uploads/images/noImage/png';
+        }
+        
+        await product.save();
+        res.send('product saved');
+    }catch(err){
+        res.status(400).send(err);
+    }
 
 })
 
@@ -51,12 +56,14 @@ router.get('/:category',async (req,res)=>{
 })
 
 
-
-
 //delete product 
 router.delete('/:productId',async(req,res)=>{
-    const product = await Product.findByIdAndRemove(req.params.productId);
-    res.send(product);
+    try{
+        const product = await Product.findByIdAndRemove(req.params.productId);
+        res.status(200).send(product);
+    }catch(err){
+        res.status(400).send(err);
+    }
 })
 
 
@@ -72,9 +79,8 @@ router.patch('/update-product/:productId',upload.single('image'),async(req,res)=
       const response = await Product.findByIdAndUpdate(req.params.productId,req.body);
           return res.status(200).send(response.title+' updated');
 
-    } catch (error) {
-        console.log(error)
-        
+    } catch(err){
+        res.status(400).send(err);
     }
 })
 
@@ -96,13 +102,12 @@ router.patch('/update-sells/:productId',async(req,res)=>{
 })
 
 
-
-
 // get best sellers games
 router.get('/best-sells/games',async(req,res)=>{
     const products = await Product.find({}).sort({'sells':-1}).limit(4);
     res.send(products);
 })
+
 
 //get new games
 router.get('/new-games/games',async(req,res)=>{
@@ -110,12 +115,21 @@ router.get('/new-games/games',async(req,res)=>{
     res.send(products);
 })
 
+
 //get coming soon games
 router.get('/coming-soon/games',async(req,res)=>{
     const products = await Product.find({comingSoon:true}).sort({'createdAt':-1}).limit(4);
     res.send(products);
 })
 
+
+//search product by name
+router.get('/search/:productName',async(req,res)=>{
+    const products = await Product.find({title:{ $regex: new RegExp("^" + req.params.productName.toLowerCase(), "i") } });
+    // const products = await Product.find({"title":/req.params.productName/i },function(err,docs){});
+    return res.status(200).send(products);
+
+})
 
 
 module.exports = router;
