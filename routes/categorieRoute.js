@@ -74,8 +74,12 @@ router.get('/hardware',async(req,res)=>{
 
 //delete category 
 router.delete('/:categoryId',async(req,res)=>{
-    const category = await Categorie.findByIdAndRemove(req.params.categoryId);
-    res.send(category);
+    try{
+        const category = await Categorie.findByIdAndRemove(req.params.categoryId);
+        res.status(200).send(category.title + 'category Deleted');
+    }catch(err){
+        res.status(400).send('category did not delete....')
+    }
 })
 
 module.exports = router;
