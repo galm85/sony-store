@@ -10,6 +10,7 @@ const productsRoute = require('./routes/productsRoute');
 const usersRoute = require('./routes/usersRoute');
 const ordersRoute = require('./routes/ordersRoute');
 const messagesRoute = require('./routes/messagesRoute');
+const articleRoute = require('./routes/articlesRoute');
 
 mongoose.connect(process.env.MONGO_URI,{
     useFindAndModify:true,
@@ -30,6 +31,7 @@ app.use('/products',productsRoute);
 app.use('/users',usersRoute);
 app.use('/orders',ordersRoute);
 app.use('/messages',messagesRoute);
+app.use('/articles',articleRoute);
 
 app.get('/',(req,res)=>{
     res.send("Sony v2");

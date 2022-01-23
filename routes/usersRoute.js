@@ -211,24 +211,34 @@ router.get('/wish-list/:userId',async(req,res)=>{
 
 //add item to wish list
 router.patch('/wish-list/add/:userId',async(req,res)=>{
-    const product = await Product.findById(req.body.productId);
-    let {wishList} = await User.findById(req.params.userId);
+    try{
 
-    wishList.push(req.body.productId);
-    await User.findByIdAndUpdate(req.params.userId,{wishList});
-    res.status(200).send({message:product.title + ' added to the wishList',wishList:wishList});
+        const product = await Product.findById(req.body.productId);
+        let {wishList} = await User.findById(req.params.userId);
+        
+        wishList.push(req.body.productId);
+        await User.findByIdAndUpdate(req.params.userId,{wishList});
+        res.status(200).send({message:product.title + ' added to the wishList',wishList:wishList});
+    }catch(error){
+        res.status(400).send(error)
+    }
 
 })
 
 //remove from wish List
 router.patch('/wish-list/remove/:userId',async(req,res)=>{
-    const product = await Product.findById(req.body.productId);
-    let {wishList} = await User.findById(req.params.userId);
+    try{
 
-    wishList = wishList.filter(item=>item != req.body.productId);
-    await User.findByIdAndUpdate(req.params.userId,{wishList});
-    res.status(200).send({message:product.title + ' removed from wishList',wishList:wishList});
-
+        const product = await Product.findById(req.body.productId);
+        let {wishList} = await User.findById(req.params.userId);
+        
+        wishList = wishList.filter(item=>item != req.body.productId);
+        await User.findByIdAndUpdate(req.params.userId,{wishList});
+        res.status(200).send(product.title + ' removed from wishList');
+    }catch(err){
+        return res.status(400).send(err)
+    }
+        
 
 
 })
