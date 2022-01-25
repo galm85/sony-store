@@ -22,7 +22,7 @@ router.get('/',async(req,res)=>{
 //get comments by article id
 router.get('/get-by-article/:articleId',async(req,res)=>{
     try{
-        const comments = await Comments.find({articleId:req.params.articleId});
+        const comments = await Comment.find({articleId:req.params.articleId});
         return res.status(200).send(comments);
     }catch(err){
         return res.status(400).send(err);
@@ -32,7 +32,7 @@ router.get('/get-by-article/:articleId',async(req,res)=>{
 //get comments by user id
 router.get('/get-by-user/:userId',async(req,res)=>{
     try{
-        const comments = await Comments.find({userId:req.params.userId});
+        const comments = await Comment.find({userId:req.params.userId});
         return res.status(200).send(comments);
     }catch(err){
         return res.status(400).send(err);
