@@ -114,6 +114,36 @@ router.delete('/delete/:productId',async(req,res)=>{
 })
 
 
+// add/reduce like to article
+router.patch('/likes/:articleId/:op',async(req,res)=>{
+    try{
+        let op = req.params.op;
+        let article = await Article.findById(req.params.articleId);
+        if(op === 'like'){
+            article.likes = article.likes+1;
+        }else{
+            article.likes = article.likes-1;
+        }
+        await Article.findByIdAndUpdate(req.params.articleId,article);
+        return res.status(200).send(op);
+
+
+    }catch(err){
+        return res.status(400).send(err.response.data)
+    }
+})
+
+
+//getSingleArticle
+router.get('/single-article/:articleId',async(req,res)=>{
+    try{
+        const article = await Article.findById(req.params.articleId);
+        return res.status(200).send(article);
+    }catch(err){
+        return res.status(400).send(err)
+    }
+})
+
 
 
 
