@@ -24,7 +24,7 @@ const upload = multer({storage:storage});
 
 //get all articles
 router.get('/',async(req,res)=>{
-    console.log('articles');
+    
     try{
         const articles = await Article.find({});
         return res.status(200).send(articles);
@@ -34,8 +34,19 @@ router.get('/',async(req,res)=>{
 })
 
 
-//add new article
+//get only posted articles
+router.get('/posted',async(req,res)=>{
+    try{
+        const articles = await Article.find({status:'post'});
+        return res.status(200).send(articles);
+    }catch(err){
+        return res.status(400).send(err);
+    }
+})
 
+
+
+//add new article
 router.post('/',upload.single('image'),async(req,res)=>{
     try{
         let article = new Article(req.body);
@@ -69,17 +80,26 @@ router.delete('/:articleId',async(req,res)=>{
 
 
 //update product
-router.patch('/update-product/:productId',upload.single('image'),async(req,res)=>{
+router.patch('/update-article/:articleId',upload.single('image'),async(req,res)=>{
+    
     try {
       if(req.file){
-          let product = req.body;
-          product.image = req.file.path;
-          const response = await Product.findByIdAndUpdate(req.params.productId,product);
-          return res.status(200).send({message:response.title+' updated',product:product});
+          let article = req.body;
+          article.image = req.file.path;
+          await Article.findByIdAndUpdate(req.params.articleId,article);
+          if(article.status == 'post'){
+              return res.status(200).send('Article Updated and Posted');
+            }else{
+              return res.status(200).send('Article Updated and saved to drafts');
+          }
       }
-      const response = await Product.findByIdAndUpdate(req.params.productId,req.body);
-          return res.status(200).send(response.title+' updated');
-
+      
+      await Article.findByIdAndUpdate(req.params.articleId,req.body);
+        if(req.body.status == 'post'){
+            return res.status(200).send('Article Updated and Posted');
+        }else{
+            return res.status(200).send('Article Updated and saved to drafts');
+        }
     } catch(err){
         res.status(400).send(err);
     }
@@ -94,43 +114,7 @@ router.delete('/delete/:productId',async(req,res)=>{
 })
 
 
-//update selles
-router.patch('/update-sells/:productId',async(req,res)=>{
-    let {sells} = await Product.findById(req.params.productId);
-    sells = sells + req.body.amount;
-    await Product.findByIdAndUpdate(req.params.productId,{sells:sells});
-    res.status(200).send('sells update');
-})
 
-
-// get best sellers games
-router.get('/best-sells/games',async(req,res)=>{
-    const products = await Product.find({}).sort({'sells':-1}).limit(4);
-    res.send(products);
-})
-
-
-//get new games
-router.get('/new-games/games',async(req,res)=>{
-    const products = await Product.find({newGame:true}).sort({'createdAt':-1}).limit(4);
-    res.send(products);
-})
-
-
-//get coming soon games
-router.get('/coming-soon/games',async(req,res)=>{
-    const products = await Product.find({comingSoon:true}).sort({'createdAt':-1}).limit(4);
-    res.send(products);
-})
-
-
-//search product by name
-router.get('/search/:productName',async(req,res)=>{
-    const products = await Product.find({title:{ $regex: new RegExp("^" + req.params.productName.toLowerCase(), "i") } });
-    // const products = await Product.find({"title":/req.params.productName/i },function(err,docs){});
-    return res.status(200).send(products);
-
-})
 
 
 module.exports = router;
