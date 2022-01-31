@@ -132,4 +132,11 @@ router.get('/search/:productName',async(req,res)=>{
 })
 
 
+//get Product by id
+router.get('/product-by-id/:productId',async(req,res)=>{
+    const product = await Product.findById(req.params.productId);
+    return res.status(200).send(product);
+})
+
+
 module.exports = router;

@@ -30,14 +30,13 @@ router.post('/',async(req,res)=>{
 
 //get orders by user
 router.get('/profile/:userId',async(req,res)=>{
-    const orders = await Order.find({userId:req.params.userId});
+    const orders = await Order.find({userId:req.params.userId}).sort({createdAt:-1});
     res.status(200).send(orders);
 })
 
 
 //update order status
 router.patch('/update-status/:orderId',async(req,res)=>{
-    console.log(req.body);
     const order = await Order.findByIdAndUpdate(req.params.orderId,{status:req.body.status});
     res.status(200).send('Order Number: '+order._id+' status is: '+req.body.status);
 })
@@ -52,6 +51,7 @@ router.get('/search/:email',async(req,res)=>{
     }
 
 })
+
 //search order by id
 router.get('/search-by-id/:id',async(req,res)=>{
     try{

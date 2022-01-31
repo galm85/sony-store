@@ -3,10 +3,6 @@ const Comment = require('../models/commentsModel');
 
 
 
-
-
-
-
 //get all articles
 router.get('/',async(req,res)=>{
     
@@ -22,7 +18,7 @@ router.get('/',async(req,res)=>{
 //get comments by article id
 router.get('/get-by-article/:articleId',async(req,res)=>{
     try{
-        const comments = await Comment.find({articleId:req.params.articleId});
+        const comments = await Comment.find({articleId:req.params.articleId}).sort({createdAt:-1});
         return res.status(200).send(comments);
     }catch(err){
         return res.status(400).send(err);
